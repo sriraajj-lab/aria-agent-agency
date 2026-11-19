@@ -137,7 +137,7 @@ export default function AutomationDetail() {
               <h2 style={{ marginTop: 35 }}>Need installation or API help?</h2>
               <p className="muted">
                 Optional service work is additional to the workflow price. These
-                are draft planning estimates—not charges in your cart. Confirm
+                are planning estimates—not charges in your cart. Confirm
                 scope, provider-cost ownership and final fees with Aria before
                 work.
               </p>
@@ -187,7 +187,7 @@ export default function AutomationDetail() {
               <span>one-time workflow kit</span>
             </div>
             <span className="test-price-pill">
-              Draft price · test checkout only
+              One-time price · 7-day refund
             </span>
             <CheckList
               items={[
