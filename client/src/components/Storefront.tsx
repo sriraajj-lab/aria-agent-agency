@@ -230,7 +230,6 @@ export function Footer() {
             <h4>WORK WITH ARIA</h4>
             <Link href="/automations">All automations</Link>
             <Link href="/implementation">Implementation</Link>
-            <Link href="/growth">Growth engine (internal)</Link>
             <Link href="/how-it-works">Our process</Link>
             <Link href="/orders">My purchases</Link>
             <a

@@ -9,14 +9,14 @@ export const supportOptions = [
   {
     id: "installation",
     label: "Install my purchased kit",
-    price: "Draft planning estimate: from $199 one-time",
+    price: "From $199 one-time",
     description:
       "Import/configuration, one agreed source connection, synthetic testing and handover. Final scope and price are confirmed before work; vendor usage is excluded.",
   },
   {
     id: "installation-api",
     label: "Installation + API wiring",
-    price: "Draft estimate: installation from $199 + API wiring from $99",
+    price: "Installation from $199 + API wiring from $99",
     description:
       "We help connect documented provider APIs and test approval/error paths. Per-connector complexity, vendor account fees and metered usage are quoted separately.",
   },

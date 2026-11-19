@@ -107,7 +107,7 @@ export default function AutomationDetail() {
                 <p>
                   Your package is a configurable workflow starter, not an
                   already-connected service. Files are available in your
-                  purchase library after verified test payment.
+                  purchase library as soon as your payment is confirmed.
                 </p>
               </div>
             </section>
