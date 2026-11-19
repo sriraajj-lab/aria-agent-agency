@@ -351,7 +351,7 @@ export function AutomationCard({ item }: { item: Automation }) {
         <div className="card-bottom">
           <div>
             <strong>{formatPrice(item.price)}</strong>
-            <small>one-time · draft test price</small>
+            <small>one-time</small>
           </div>
           <Link
             href={`/automations/${item.id}`}
