@@ -22,8 +22,8 @@ const faqs = [
     "Self-service setup requires someone who can configure n8n, securely manage provider credentials, read source-system API documentation, and test workflow exceptions. If that is not your team, choose agency-led implementation.",
   ],
   [
-    "Are the prices and payments live?",
-    "Not yet. This storefront uses clearly labeled draft USD prices and Stripe test checkout. No live money should be collected until Aria confirms final prices, commercial terms, licenses, and live payment configuration.",
+    "Can I get a refund?",
+    "Yes. If a kit is not right for you, email us within 7 days of purchase for a full refund of the kit price. Implementation work is agreed and billed separately.",
   ],
   [
     "Are third-party tools included?",
@@ -203,11 +203,10 @@ export function Privacy() {
         </p>
         <h2>Accounts and purchases</h2>
         <p>
-          Account sign-in uses Manus OAuth. The application keeps the identity
+          Account sign-in uses email and password (stored as a salted scrypt hash). The application keeps the identity
           and basic profile required for account access, purchase records,
-          entitlement checks, and secure downloads. Stripe hosts checkout; the
+          entitlement checks, and secure downloads. Our payment provider (Dodo Payments) hosts checkout; the
           application does not collect or store card numbers or security codes.
-          This version is configured for test checkout only.
         </p>
         <h2>Demo data</h2>
         <p>
@@ -229,10 +228,9 @@ export function Privacy() {
         <p>
           Contact <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> to ask
           about the details you submitted or to request correction or removal.
-          Aria must finalize its organization-specific retention and legal
-          privacy policy before live commercial launch. This page describes the
-          implemented storefront behavior; it is not a claim of regulatory
-          certification.
+          We keep submitted details only as long as needed to respond and to
+          maintain purchase records. This page describes the implemented
+          storefront behavior; it is not a claim of regulatory certification.
         </p>
         <div className="guardrail-note">
           <ShieldCheck />
@@ -251,13 +249,13 @@ export function Terms() {
     <PageShell>
       <div className="container legal-page">
         <Breadcrumbs items={[{ label: "Purchase information" }]} />
-        <span className="eyebrow">PRE-LAUNCH PURCHASE INFORMATION</span>
+        <span className="eyebrow">PURCHASE INFORMATION</span>
         <h1>
           Know what’s included.
           <br />
           <em>Know what comes next.</em>
         </h1>
-        <p className="legal-date">Draft storefront · test checkout only</p>
+        <p className="legal-date">Terms of sale · USD pricing · 7-day refunds</p>
         <h2>Configurable kits, not active deployments</h2>
         <p>
           A self-service purchase delivers workflow starter files, prompts or
@@ -268,8 +266,7 @@ export function Terms() {
         </p>
         <h2>Pricing and external costs</h2>
         <p>
-          Displayed USD prices are draft test prices, not a confirmed live
-          commercial offer. Third-party subscriptions, hosting, AI usage,
+          Prices are one-time USD prices per kit. Third-party subscriptions, hosting, AI usage,
           messaging charges, custom connectors, implementation, and recurring
           maintenance are not included. Final taxes or adjustments, where
           configured, are shown by the payment provider.
@@ -284,17 +281,16 @@ export function Terms() {
         <h2>Access and payment verification</h2>
         <p>
           Downloads are linked to the signed-in purchaser and made available
-          after verified Stripe test payment. Checkout return parameters do not
+          after verified payment. Checkout return parameters do not
           grant access. Keep your account access available if you want to
           retrieve your purchase history and files.
         </p>
-        <h2>Live-launch commercial policies</h2>
+        <h2>Refunds, license and support</h2>
         <p>
-          Before collecting live payments, Aria must confirm its final prices
-          and currency, product licensing/use rights, refund and cancellation
-          terms, support commitments, and organization-specific terms of sale.
-          No refund policy or licensing grant is being invented on Aria’s behalf
-          in this draft build.
+          Refunds: email us within 7 days of purchase for a full refund of the
+          kit price. License: each kit may be used by the purchasing business
+          for its own operations; it may not be resold or redistributed.
+          Support: setup questions are answered by email on business days.
         </p>
         <h2>Healthcare boundaries</h2>
         <p>

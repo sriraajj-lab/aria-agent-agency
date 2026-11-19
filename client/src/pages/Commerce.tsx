@@ -289,7 +289,7 @@ export function Cart() {
                 </div>
               )}
               <p>
-                USD · draft prices · test checkout only. Any tax or applicable
+                USD · 7-day refund. Any tax or applicable
                 adjustments are shown by{" "}
                 {status.data?.gateway === "dodo" ? "Dodo Payments" : "Stripe"}.
               </p>
@@ -316,7 +316,7 @@ export function Cart() {
                 ) : (
                   <>
                     {user
-                      ? "Continue to test checkout"
+                      ? "Continue to secure checkout"
                       : "Sign in to check out"}
                     <ArrowUpRight size={17} />
                   </>
@@ -390,9 +390,9 @@ export function Orders() {
               <div className="info-note">
                 <ShieldCheck size={21} />
                 <p>
-                  We verify the payment with Stripe before granting access. If
+                  We verify the payment with the payment provider before granting access. If
                   you just completed checkout, a “pending” record can take a
-                  moment to update. This is test checkout only.
+                  moment to update.
                 </p>
               </div>
             )}
@@ -508,7 +508,7 @@ export function Orders() {
                     })}
                     <div className="order-bottom">
                       <span>
-                        Draft test pricing · no production connection included
+                        One-time price · no production connection included
                       </span>
                       <strong>{formatPrice(order.amount)}</strong>
                     </div>

@@ -33,7 +33,7 @@ const products = (ids: string[]) =>
   `<section class="automation-grid">${ids
     .map(id => {
       const a = getAutomation(id)!;
-      return `<article class="automation-card"><div class="card-body"><h2>${link("/automations/" + a.id, a.name)}</h2><p>${escapeHtml(a.description)}</p><p>${escapeHtml(formatPrice(a.price))} · Draft USD test price · Configuration required</p></div></article>`;
+      return `<article class="automation-card"><div class="card-body"><h2>${link("/automations/" + a.id, a.name)}</h2><p>${escapeHtml(a.description)}</p><p>${escapeHtml(formatPrice(a.price))} · One-time USD price · Configuration required</p></div></article>`;
     })
     .join("")}</section>`;
 export function getPageContent(path: string): PublicContent {
@@ -56,7 +56,7 @@ export function getPageContent(path: string): PublicContent {
       description:
         "Find configurable n8n automation kits for front-office, lead qualification, dental practices, hospital administration, customer support and daily operations.",
       heading: "Find your next AI teammate.",
-      body: `<p>Browse by task: ${categories.slice(1).map(escapeHtml).join(", ")}. Every kit requires configuration and uses draft USD test pricing.</p>${products(automations.map(x => x.id))}`,
+      body: `<p>Browse by task: ${categories.slice(1).map(escapeHtml).join(", ")}. Every kit requires configuration and has a one-time USD price and a 7-day refund window.</p>${products(automations.map(x => x.id))}`,
     };
   if (/^\/automations\/[^/]+\/setup$/.test(path)) {
     const item = getAutomation(path.split("/")[2]);
@@ -204,30 +204,30 @@ export function getPageContent(path: string): PublicContent {
     "/faq": {
       title: "Automation Kit FAQs and Support | Aria Agency",
       description:
-        "Understand Aria automation kit contents, setup requirements, test checkout, third-party costs, healthcare boundaries and agency implementation support.",
+        "Understand Aria automation kit contents, setup requirements, refunds, third-party costs, healthcare boundaries and agency implementation support.",
       heading: "Good questions. Clear expectations.",
-      body: "<h2>What am I buying?</h2><p>A configurable n8n starter kit, not an active business deployment.</p><h2>Can Aria implement it?</h2><p>Implementation is separately scoped around your tools and goals.</p><h2>Are payments live?</h2><p>No. Prices are draft USD test prices. Live pricing and commercial policies must be finalized first.</p><h2>Are tool subscriptions included?</h2><p>Hosting, AI, CRM, calendar and messaging subscriptions/usage are separate.</p><h2>Can healthcare AI give medical advice?</h2><p>No. It is limited to administration and escalates clinical questions to people.</p>",
+      body: "<h2>What am I buying?</h2><p>A configurable n8n starter kit, not an active business deployment.</p><h2>Can Aria implement it?</h2><p>Implementation is separately scoped around your tools and goals.</p><h2>Can I get a refund?</h2><p>Yes. Email us within 7 days of purchase for a full refund of the kit price.</p><h2>Are tool subscriptions included?</h2><p>Hosting, AI, CRM, calendar and messaging subscriptions/usage are separate.</p><h2>Can healthcare AI give medical advice?</h2><p>No. It is limited to administration and escalates clinical questions to people.</p>",
     },
     "/privacy": {
       title: "Storefront Privacy Information | Aria Agency",
       description:
-        "Learn how Aria’s draft storefront handles business inquiry details, account-linked purchases, synthetic demos, session cookies and cart storage.",
+        "Learn how Aria’s storefront handles business inquiry details, account-linked purchases, synthetic demos, session cookies and cart storage.",
       heading: "Your information, handled with purpose.",
-      body: "<p>Business implementation requests are stored in the project database and restricted to the authorized administrator. Account-linked purchase records are used for verified kit access. Stripe hosts test checkout; card details are not stored by this application.</p><h2>Synthetic demos</h2><p>No patient records or free-text personal information are accepted by the public demo.</p><h2>Contact</h2><p>Contact Aria at sriraajj@gmail.com about your submitted business details. Organization-specific retention and legal policies must be finalized before live launch.</p>",
+      body: "<p>Business implementation requests are stored in the project database and restricted to the authorized administrator. Account-linked purchase records are used for verified kit access. Our payment provider hosts checkout; card details are not stored by this application.</p><h2>Synthetic demos</h2><p>No patient records or free-text personal information are accepted by the public demo.</p><h2>Contact</h2><p>Contact Aria at sriraajj@gmail.com about your submitted business details. Organization-specific retention and legal policies must be finalized before live launch.</p>",
     },
     "/terms": {
       title: "Automation Kit Purchase Information | Aria Agency",
       description:
-        "Review the draft Aria storefront’s kit scope, test pricing, external costs, verified downloads and commercial policies required before live sales.",
+        "Review Aria kit scope, pricing, external costs, verified downloads, refunds and license terms.",
       heading: "Know what’s included. Know what comes next.",
-      body: "<p>Kits are inactive configurable starters with workflows, prompts, synthetic examples and setup guidance. Purchase does not connect client systems or activate communications.</p><h2>Draft pricing and exclusions</h2><p>USD prices and Stripe checkout are test-only. Third-party costs and implementation are separate.</p><h2>Before live launch</h2><p>Aria must confirm final pricing, licensing, refunds, support commitments and organization-specific terms. No policies are invented in this draft build.</p>",
+      body: "<p>Kits are inactive configurable starters with workflows, prompts, synthetic examples and setup guidance. Purchase does not connect client systems or activate communications.</p><h2>Pricing and exclusions</h2><p>One-time USD prices per kit. Third-party costs and implementation are separate.</p><h2>Refunds, license and support</h2><p>Email us within 7 days of purchase for a full refund of the kit price. Each kit may be used by the purchasing business for its own operations and may not be resold. Setup questions are answered by email on business days.</p>",
     },
     "/cart": {
       title: "Your Automation Cart | Aria Agent Agency",
       description:
-        "Review selected automation workflow kits and continue to secure Stripe test checkout. Prices are draft and production integrations require configuration.",
+        "Review selected automation workflow kits and continue to secure checkout. Production integrations require configuration.",
       heading: "Your automation toolkit.",
-      body: "<p>Review your selected workflow kits. Secure test checkout requires a signed-in customer account. No active business deployment is included.</p>",
+      body: "<p>Review your selected workflow kits. Secure checkout requires a signed-in customer account. No active business deployment is included.</p>",
       noindex: true,
     },
     "/login": {

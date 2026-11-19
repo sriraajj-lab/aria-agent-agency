@@ -696,7 +696,7 @@ async function processDodoEvent(
   try {
     await db.insert(dodoEvents).values({ id: eventId, type: event.type });
   } catch (error: any) {
-    if (error?.code === "SQLITE_CONSTRAINT_PRIMARYKEY" || error?.errno === 19)
+    if (error?.code === "23505" || error?.code === "SQLITE_CONSTRAINT_PRIMARYKEY" || error?.errno === 19)
       return "duplicate";
     throw error;
   }

@@ -19,7 +19,5 @@ services:
         sync: false
       - key: DODO_WEBHOOK_KEY
         sync: false
-    disk:
-      name: aria-data
-      mountPath: /app/data
-      sizeGB: 1
+      - key: DATABASE_URL
+        sync: false

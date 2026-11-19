@@ -131,7 +131,7 @@ export default function Catalog({
           <span>
             {results.length} automation{results.length !== 1 ? "s" : ""}
           </span>
-          <span>One-time workflow kits · draft USD test prices</span>
+          <span>One-time workflow kits · USD</span>
         </div>
         {results.length ? (
           <div className="automation-grid catalog-grid">
@@ -165,8 +165,7 @@ export default function Catalog({
             Each kit contains importable n8n workflow starters, prompts,
             synthetic examples, and setup guidance. You’ll need your own
             approved tools and credentials. Third-party platform, AI, messaging,
-            and implementation costs are separate. Checkout is test-only until
-            final prices and live payments are confirmed.
+            and implementation costs are separate. Every kit comes with a 7-day refund window.
           </p>
         </div>
         <div className="bottom-cta">

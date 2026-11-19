@@ -373,8 +373,8 @@ function hasLiveStripeKey() {
   return Boolean(process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_"));
 }
 
-function createPurchase(tx: any, order: typeof storeOrders.$inferSelect) {
-  tx.insert(storePurchases)
+async function createPurchase(tx: any, order: typeof storeOrders.$inferSelect) {
+  await tx.insert(storePurchases)
     .values({
       id: nanoid(18),
       orderId: order.id,
@@ -384,12 +384,10 @@ function createPurchase(tx: any, order: typeof storeOrders.$inferSelect) {
     .onConflictDoUpdate({
       target: storePurchases.orderId,
       set: { orderId: order.id },
-    })
-    .run();
+    });
 }
 
-// better-sqlite3 transactions are synchronous: use .all() / .run() only.
-function applyStripeEvent(tx: any, event: Stripe.Event) {
+async function applyStripeEvent(tx: any, event: Stripe.Event) {
   const object = event.data.object as any;
   if (event.type === "checkout.session.completed") {
     const session = object as Stripe.Checkout.Session;
@@ -399,12 +397,11 @@ function applyStripeEvent(tx: any, event: Stripe.Event) {
       : [];
     if (orderId) conditions.push(eq(storeOrders.id, orderId));
     const rows = conditions.length
-      ? (tx
+      ? ((await tx
           .select()
           .from(storeOrders)
           .where(or(...conditions))
-          .limit(1)
-          .all() as any[])
+          .limit(1)) as any[])
       : [];
     const order = rows[0];
     if (!order) return;
@@ -417,17 +414,16 @@ function applyStripeEvent(tx: any, event: Stripe.Event) {
         ? session.customer
         : session.customer?.id;
     const paid = session.payment_status === "paid";
-    tx.update(storeOrders)
+    await tx.update(storeOrders)
       .set({
         status: order.status === "paid" || paid ? "paid" : "pending",
         stripeSessionId: session.id,
         stripeCustomerId: customer ?? order.stripeCustomerId,
         stripePaymentIntentId: paymentIntent ?? order.stripePaymentIntentId,
       })
-      .where(eq(storeOrders.id, order.id))
-      .run();
+      .where(eq(storeOrders.id, order.id));
     if (paid)
-      createPurchase(tx, {
+      await createPurchase(tx, {
         ...order,
         status: "paid",
         stripeSessionId: session.id,
@@ -442,24 +438,22 @@ function applyStripeEvent(tx: any, event: Stripe.Event) {
   ) {
     const paymentIntentId = typeof object.id === "string" ? object.id : null;
     if (!paymentIntentId) return;
-    const rows = tx
+    const rows = (await tx
       .select()
       .from(storeOrders)
       .where(eq(storeOrders.stripePaymentIntentId, paymentIntentId))
-      .limit(1)
-      .all() as any[];
+      .limit(1)) as any[];
     const order = rows[0];
     if (!order) return;
     const paid = event.type === "payment_intent.succeeded";
-    tx.update(storeOrders)
+    await tx.update(storeOrders)
       .set({
         status: order.status === "paid" || paid ? "paid" : "failed",
         stripePaymentIntentId: paymentIntentId,
       })
-      .where(eq(storeOrders.id, order.id))
-      .run();
+      .where(eq(storeOrders.id, order.id));
     if (paid)
-      createPurchase(tx, {
+      await createPurchase(tx, {
         ...order,
         status: "paid",
         stripePaymentIntentId: paymentIntentId,
@@ -475,27 +469,26 @@ async function processStripeEvent(
   if (!db) throw new Error("Database is not available");
   try {
     let duplicate = false;
-    // better-sqlite3 transactions are synchronous: use .all() / .run() only.
-    db.transaction((tx: any) => {
-      const existing = tx
+        await db.transaction(async (tx: any) => {
+      const existing = (await tx
         .select({ id: stripeEvents.id })
         .from(stripeEvents)
         .where(eq(stripeEvents.id, event.id))
-        .limit(1)
-        .all() as any[];
+        .limit(1)) as any[];
       if (existing.length) {
         duplicate = true;
         return;
       }
-      tx.insert(stripeEvents).values({ id: event.id, type: event.type }).run();
-      applyStripeEvent(tx, event);
+      await tx.insert(stripeEvents).values({ id: event.id, type: event.type });
+      await applyStripeEvent(tx, event);
     });
     return duplicate ? "duplicate" : "processed";
   } catch (error: any) {
     if (
       error?.code === "ER_DUP_ENTRY" ||
       error?.errno === 1062 ||
-      error?.code === "SQLITE_CONSTRAINT_PRIMARYKEY"
+      error?.code === "SQLITE_CONSTRAINT_PRIMARYKEY" ||
+      error?.code === "23505"
     )
       return "duplicate";
     throw error;
