@@ -43,7 +43,7 @@ const faqs = [
   ],
   [
     "How do I get my files after purchase?",
-    "Sign in to My purchases. Access is linked to your account and granted only after the Stripe webhook verifies the completed test payment. If you return before the webhook arrives, the order may briefly show pending.",
+    "Sign in to My purchases. Access is linked to your account and granted only after the payment provider confirms your payment. If you return before the webhook arrives, the order may briefly show pending.",
   ],
   [
     "What support and maintenance are included?",
