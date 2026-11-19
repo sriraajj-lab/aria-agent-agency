@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient, type Client } from "@libsql/client";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import {
@@ -26,16 +26,21 @@ export type AriaDatabase = ReturnType<typeof drizzle>;
 
 let _db: AriaDatabase | null = null;
 
+function resolveDatabaseUrl(): string {
+  const remote = process.env.TURSO_DATABASE_URL?.trim();
+  if (remote) return remote;
+  return `file:${resolveDatabaseFile()}`;
+}
+
 function resolveDatabaseFile(): string {
   const explicit = process.env.SQLITE_DB_PATH;
   if (explicit && explicit.trim()) return path.resolve(explicit.trim());
   return path.resolve(process.cwd(), "data", "aria.sqlite3");
 }
 
-function bootstrapSchema(sqlite: Database.Database) {
-  sqlite.pragma("journal_mode = WAL");
-  sqlite.pragma("foreign_keys = ON");
-  sqlite.exec(`
+async function bootstrapSchema(client: Client) {
+  await client.execute("PRAGMA foreign_keys = ON");
+  await client.executeMultiple(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       openId TEXT NOT NULL UNIQUE,
@@ -234,10 +239,8 @@ function bootstrapSchema(sqlite: Database.Database) {
 
   // Keep the zero-config bootstrap compatible with databases created before
   // the Growth Engine suppression fields were added.
-  const growthColumns = sqlite
-    .prepare("PRAGMA table_info(growth_leads)")
-    .all() as Array<{ name: string }>;
-  const existing = new Set(growthColumns.map(column => column.name));
+  const growthColumns = await client.execute("PRAGMA table_info(growth_leads)");
+  const existing = new Set(growthColumns.rows.map(row => String(row.name)));
   const additions: Array<[string, string]> = [
     ["doNotContact", "INTEGER NOT NULL DEFAULT 0"],
     ["doNotContactReason", "TEXT"],
@@ -246,7 +249,7 @@ function bootstrapSchema(sqlite: Database.Database) {
   ];
   for (const [name, definition] of additions) {
     if (!existing.has(name)) {
-      sqlite.exec(`ALTER TABLE growth_leads ADD COLUMN ${name} ${definition}`);
+      await client.execute(`ALTER TABLE growth_leads ADD COLUMN ${name} ${definition}`);
     }
   }
 }
@@ -255,11 +258,11 @@ function bootstrapSchema(sqlite: Database.Database) {
 export async function getDb(): Promise<AriaDatabase | null> {
   if (!_db && process.env.DATABASE_URL !== "disabled") {
     try {
-      const file = resolveDatabaseFile();
-      mkdirSync(path.dirname(file), { recursive: true });
-      const sqlite = new Database(file);
-      bootstrapSchema(sqlite);
-      _db = drizzle({ client: sqlite, schema: {
+      const url = resolveDatabaseUrl();
+      if (url.startsWith("file:")) mkdirSync(path.dirname(resolveDatabaseFile()), { recursive: true });
+      const client = createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN });
+      await bootstrapSchema(client);
+      _db = drizzle({ client, schema: {
         users,
         storeOrders,
         storePurchases,
