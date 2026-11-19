@@ -384,8 +384,7 @@ async function createPurchase(tx: any, order: typeof storeOrders.$inferSelect) {
     .onConflictDoUpdate({
       target: storePurchases.orderId,
       set: { orderId: order.id },
-    })
-    .run();
+    });
 }
 
 async function applyStripeEvent(tx: any, event: Stripe.Event) {
@@ -402,8 +401,7 @@ async function applyStripeEvent(tx: any, event: Stripe.Event) {
           .select()
           .from(storeOrders)
           .where(or(...conditions))
-          .limit(1)
-          .all()) as any[])
+          .limit(1)) as any[])
       : [];
     const order = rows[0];
     if (!order) return;
@@ -423,8 +421,7 @@ async function applyStripeEvent(tx: any, event: Stripe.Event) {
         stripeCustomerId: customer ?? order.stripeCustomerId,
         stripePaymentIntentId: paymentIntent ?? order.stripePaymentIntentId,
       })
-      .where(eq(storeOrders.id, order.id))
-      .run();
+      .where(eq(storeOrders.id, order.id));
     if (paid)
       await createPurchase(tx, {
         ...order,
@@ -445,8 +442,7 @@ async function applyStripeEvent(tx: any, event: Stripe.Event) {
       .select()
       .from(storeOrders)
       .where(eq(storeOrders.stripePaymentIntentId, paymentIntentId))
-      .limit(1)
-      .all()) as any[];
+      .limit(1)) as any[];
     const order = rows[0];
     if (!order) return;
     const paid = event.type === "payment_intent.succeeded";
@@ -455,8 +451,7 @@ async function applyStripeEvent(tx: any, event: Stripe.Event) {
         status: order.status === "paid" || paid ? "paid" : "failed",
         stripePaymentIntentId: paymentIntentId,
       })
-      .where(eq(storeOrders.id, order.id))
-      .run();
+      .where(eq(storeOrders.id, order.id));
     if (paid)
       await createPurchase(tx, {
         ...order,
@@ -479,13 +474,12 @@ async function processStripeEvent(
         .select({ id: stripeEvents.id })
         .from(stripeEvents)
         .where(eq(stripeEvents.id, event.id))
-        .limit(1)
-        .all()) as any[];
+        .limit(1)) as any[];
       if (existing.length) {
         duplicate = true;
         return;
       }
-      await tx.insert(stripeEvents).values({ id: event.id, type: event.type }).run();
+      await tx.insert(stripeEvents).values({ id: event.id, type: event.type });
       await applyStripeEvent(tx, event);
     });
     return duplicate ? "duplicate" : "processed";
@@ -493,7 +487,8 @@ async function processStripeEvent(
     if (
       error?.code === "ER_DUP_ENTRY" ||
       error?.errno === 1062 ||
-      error?.code === "SQLITE_CONSTRAINT_PRIMARYKEY"
+      error?.code === "SQLITE_CONSTRAINT_PRIMARYKEY" ||
+      error?.code === "23505"
     )
       return "duplicate";
     throw error;

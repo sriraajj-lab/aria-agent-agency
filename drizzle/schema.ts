@@ -1,17 +1,20 @@
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   integer,
-  sqliteTable,
+  pgTable,
+  serial,
   text,
+  timestamp,
   uniqueIndex,
-} from "drizzle-orm/sqlite-core";
+} from "drizzle-orm/pg-core";
 
 /**
  * Core user table backing auth flow (SQLite for zero-dependency installs).
  * Columns use camelCase to match both database fields and generated types.
  */
-export const users = sqliteTable("users", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
   /** Auth identifier. `local_<id>` for built-in email accounts; platform openId otherwise. */
   openId: text("openId").notNull().unique(),
   name: text("name"),
@@ -22,13 +25,13 @@ export const users = sqliteTable("users", {
   role: text("role", { enum: ["user", "admin"] })
     .notNull()
     .default("user"),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
-  updatedAt: integer("updatedAt", { mode: "timestamp" })
+  updatedAt: timestamp("updatedAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
-  lastSignedIn: integer("lastSignedIn", { mode: "timestamp" })
+  lastSignedIn: timestamp("lastSignedIn", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -46,7 +49,7 @@ export const ORDER_STATUSES = [
 export type PaymentGateway = "stripe" | "dodo";
 export const PAYMENT_GATEWAYS = ["stripe", "dodo"] as const;
 
-export const storeOrders = sqliteTable("store_orders", {
+export const storeOrders = pgTable("store_orders", {
   id: text("id").primaryKey(),
   userId: integer("userId").notNull(),
   items: text("items").notNull(),
@@ -64,10 +67,10 @@ export const storeOrders = sqliteTable("store_orders", {
   dodoPaymentId: text("dodoPaymentId"),
   dodoCustomerId: text("dodoCustomerId"),
   dodoSubscriptionId: text("dodoSubscriptionId"),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
-  updatedAt: integer("updatedAt", { mode: "timestamp" })
+  updatedAt: timestamp("updatedAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -75,12 +78,12 @@ export const storeOrders = sqliteTable("store_orders", {
 export type StoreOrder = typeof storeOrders.$inferSelect;
 export type InsertStoreOrder = typeof storeOrders.$inferInsert;
 
-export const storePurchases = sqliteTable("store_purchases", {
+export const storePurchases = pgTable("store_purchases", {
   id: text("id").primaryKey(),
   orderId: text("orderId").notNull().unique(),
   userId: integer("userId").notNull(),
   items: text("items").notNull(),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -99,7 +102,7 @@ export const SUPPORT_OPTIONS = [
   "managed-api",
 ] as const;
 
-export const storeInquiries = sqliteTable("store_inquiries", {
+export const storeInquiries = pgTable("store_inquiries", {
   id: text("id").primaryKey(),
   reference: text("reference").notNull().unique(),
   name: text("name").notNull(),
@@ -119,26 +122,26 @@ export const storeInquiries = sqliteTable("store_inquiries", {
   phone: text("phone"),
   website: text("website"),
   consent: integer("consent").notNull().default(1),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
 
 export type StoreInquiry = typeof storeInquiries.$inferSelect;
 
-export const stripeEvents = sqliteTable("stripe_events", {
+export const stripeEvents = pgTable("stripe_events", {
   id: text("id").primaryKey(),
   type: text("type").notNull(),
-  processedAt: integer("processedAt", { mode: "timestamp" })
+  processedAt: timestamp("processedAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
 
 /** Idempotent log of Dodo webhook deliveries. */
-export const dodoEvents = sqliteTable("dodo_events", {
+export const dodoEvents = pgTable("dodo_events", {
   id: text("id").primaryKey(),
   type: text("type").notNull(),
-  processedAt: integer("processedAt", { mode: "timestamp" })
+  processedAt: timestamp("processedAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -158,7 +161,7 @@ export const SUBSCRIPTION_STATUSES = [
   "on_hold",
   "expired",
 ] as const;
-export const storeSubscriptions = sqliteTable(
+export const storeSubscriptions = pgTable(
   "store_subscriptions",
   {
     id: text("id").primaryKey(),
@@ -174,11 +177,11 @@ export const storeSubscriptions = sqliteTable(
     dodoSubscriptionId: text("dodoSubscriptionId").unique(),
     dodoCustomerId: text("dodoCustomerId"),
     dodoProductId: text("dodoProductId"),
-    nextBillingDate: integer("nextBillingDate", { mode: "timestamp" }),
-    createdAt: integer("createdAt", { mode: "timestamp" })
+    nextBillingDate: timestamp("nextBillingDate", { withTimezone: true }),
+    createdAt: timestamp("createdAt", { withTimezone: true })
       .notNull()
       .$defaultFn(() => new Date()),
-    updatedAt: integer("updatedAt", { mode: "timestamp" })
+    updatedAt: timestamp("updatedAt", { withTimezone: true })
       .notNull()
       .$defaultFn(() => new Date()),
   },
@@ -188,14 +191,14 @@ export const storeSubscriptions = sqliteTable(
 export type StoreSubscription = typeof storeSubscriptions.$inferSelect;
 
 /** Newsletter / lead-magnet email capture for sales and marketing. */
-export const newsletterSubscribers = sqliteTable("newsletter_subscribers", {
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   source: text("source").notNull().default("website"),
   name: text("name"),
   verified: integer("verified").notNull().default(0),
-  unsubscribedAt: integer("unsubscribedAt", { mode: "timestamp" }),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  unsubscribedAt: timestamp("unsubscribedAt", { withTimezone: true }),
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -203,14 +206,14 @@ export const newsletterSubscribers = sqliteTable("newsletter_subscribers", {
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 
 /** First-party marketing analytics events (page views, funnel steps). */
-export const marketingEvents = sqliteTable("marketing_events", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const marketingEvents = pgTable("marketing_events", {
+  id: serial("id").primaryKey(),
   type: text("type").notNull(),
   path: text("path"),
   referrer: text("referrer"),
   sessionId: text("sessionId"),
   meta: text("meta"),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -218,7 +221,7 @@ export const marketingEvents = sqliteTable("marketing_events", {
 export type MarketingEvent = typeof marketingEvents.$inferSelect;
 
 /** Internally validated promo codes applied at checkout. */
-export const promoCodes = sqliteTable("promo_codes", {
+export const promoCodes = pgTable("promo_codes", {
   code: text("code").primaryKey(),
   kind: text("kind", { enum: ["percent", "fixed"] }).notNull(),
   value: integer("value").notNull(), // percent 1-100, or fixed USD cents off
@@ -226,7 +229,7 @@ export const promoCodes = sqliteTable("promo_codes", {
   usageLimit: integer("usageLimit"),
   usedCount: integer("usedCount").notNull().default(0),
   note: text("note"),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -234,10 +237,10 @@ export const promoCodes = sqliteTable("promo_codes", {
 export type PromoCode = typeof promoCodes.$inferSelect;
 
 /** Maps catalog automation ids to Dodo product ids (auto-provisioned). */
-export const dodoProductMap = sqliteTable("dodo_product_map", {
+export const dodoProductMap = pgTable("dodo_product_map", {
   automationId: text("automationId").primaryKey(),
   dodoProductId: text("dodoProductId").notNull(),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -259,7 +262,7 @@ export type OnboardingStatus = (typeof ONBOARDING_STATUSES)[number];
  * business, the detected/confirmed category, the delivery preference
  * (website embed / Aria portal), and the plan they chose.
  */
-export const onboardingRequests = sqliteTable("onboarding_requests", {
+export const onboardingRequests = pgTable("onboarding_requests", {
   id: text("id").primaryKey(),
   userId: integer("userId"),
   businessName: text("businessName"),
@@ -274,10 +277,10 @@ export const onboardingRequests = sqliteTable("onboarding_requests", {
   status: text("status", { enum: ONBOARDING_STATUSES })
     .notNull()
     .default("new"),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
-  updatedAt: integer("updatedAt", { mode: "timestamp" })
+  updatedAt: timestamp("updatedAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -309,7 +312,7 @@ export type GrowthChannel = (typeof GROWTH_CHANNELS)[number];
  * contact details stay optional so directory leads can be tracked before
  * full contact info is confirmed.
  */
-export const growthLeads = sqliteTable("growth_leads", {
+export const growthLeads = pgTable("growth_leads", {
   id: text("id").primaryKey(),
   nicheId: text("nicheId").notNull(),
   businessName: text("businessName").notNull(),
@@ -333,17 +336,17 @@ export const growthLeads = sqliteTable("growth_leads", {
   status: text("status", { enum: GROWTH_LEAD_STATUSES })
     .notNull()
     .default("new"),
-  doNotContact: integer("doNotContact", { mode: "boolean" })
+  doNotContact: boolean("doNotContact")
     .notNull()
     .default(false),
   doNotContactReason: text("doNotContactReason"),
-  lastContactedAt: integer("lastContactedAt", { mode: "timestamp" }),
-  nextContactAt: integer("nextContactAt", { mode: "timestamp" }),
+  lastContactedAt: timestamp("lastContactedAt", { withTimezone: true }),
+  nextContactAt: timestamp("nextContactAt", { withTimezone: true }),
   notes: text("notes"),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
-  updatedAt: integer("updatedAt", { mode: "timestamp" })
+  updatedAt: timestamp("updatedAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });
@@ -352,7 +355,7 @@ export type GrowthLead = typeof growthLeads.$inferSelect;
 export type InsertGrowthLead = typeof growthLeads.$inferInsert;
 
 /** Every outreach action by the voice / message / email agents. */
-export const growthActivities = sqliteTable("growth_activities", {
+export const growthActivities = pgTable("growth_activities", {
   id: text("id").primaryKey(),
   leadId: text("leadId").notNull(),
   agent: text("agent", { enum: GROWTH_AGENTS }).notNull(),
@@ -361,7 +364,7 @@ export const growthActivities = sqliteTable("growth_activities", {
   content: text("content").notNull(),
   outcome: text("outcome"),
   meta: text("meta"),
-  createdAt: integer("createdAt", { mode: "timestamp" })
+  createdAt: timestamp("createdAt", { withTimezone: true })
     .notNull()
     .$defaultFn(() => new Date()),
 });

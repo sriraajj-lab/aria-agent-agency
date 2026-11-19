@@ -13,7 +13,7 @@ pnpm dev            # http://localhost:3000
 ```
 
 The database is **SQLite** — no MySQL/Postgres server needed. The schema is
-created automatically at `data/aria.sqlite3` on first start.
+created automatically in the Postgres database at `DATABASE_URL` on first start (migrations in `drizzle/pg`).
 
 The **first account you register** at `/login` → "Create account" becomes the
 agency owner (admin). Everyone else becomes a customer account.
@@ -70,7 +70,7 @@ exactly as before (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`).
 | `CLAIM_FIRST_ADMIN`                           | `1` (default): first registered account becomes admin            |
 | `DISABLE_LOCAL_AUTH`                          | `1` disables email/password endpoints                            |
 | `PUBLIC_SITE_ORIGIN`                          | Canonical origin for sitemap/robots/SEO                          |
-| `SQLITE_DB_PATH`                              | Custom SQLite file location (default `data/aria.sqlite3`)        |
+| `DATABASE_URL`                                | Postgres connection string (e.g. Neon free tier)                 |
 
 ## What's inside
 
