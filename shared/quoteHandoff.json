@@ -1,0 +1,24 @@
+{
+  "title": "Who owns the next quote request?",
+  "intro": "Try these two fictional messages on paper before a holiday closure. A new estimate should reach the estimator when the office reopens. An existing client's access issue should not wait in the sales queue.",
+  "cases": [
+    {
+      "label": "New estimate",
+      "message": "Our office needs a floor-cleaning estimate. Can someone visit next week?",
+      "owner": "Estimator on the next staffed shift; name a backup before closing.",
+      "action": "Keep the request open. Prepare this draft for staff approval: “What type of flooring is it, and what times would work for a walkthrough?” Don't quote a price or confirm a slot.",
+      "check": "The backup can find the request, its owner and the unanswered draft. An auto-acknowledgment does not count as a staff reply."
+    },
+    {
+      "label": "Existing service issue",
+      "message": "Tonight's crew is at the loading entrance and can't get in.",
+      "owner": "The service contact on the existing account, following its agreed after-hours procedure.",
+      "action": "Keep this out of sales follow-up. A person checks the account's instructions; the demo never supplies access codes or promises dispatch.",
+      "check": "The service owner can find the issue through the agreed channel. It creates neither a new estimate nor a sales reply."
+    }
+  ],
+  "request": "Tell us only whether requests start in a form or a shared inbox. We'll send a free two-case rehearsal for that source. No logins, customer details or payment needed.",
+  "contact": "aria.agentworks@gmail.com",
+  "subject": "Cleaning quote handoff rehearsal",
+  "offer": "Optional managed service: $300/month for one agreed form or inbox. Your team approves replies. Aria checks routing weekly and reports unanswered quote requests monthly. We confirm scope in writing before connecting anything or billing."
+}

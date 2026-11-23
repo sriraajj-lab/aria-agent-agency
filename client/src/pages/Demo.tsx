@@ -96,6 +96,10 @@ export default function Demo() {
             business data. Actual AI classification is paired with explicit
             rules, approval gates, and human handoffs.
           </p>
+          <Link href="/demo/quote-handoff" className="text-link">
+            Cleaning business? Try the two-message quote handoff{" "}
+            <ArrowUpRight size={16} />
+          </Link>
         </div>
         <div className="demo-safety">
           <ShieldCheck size={21} />

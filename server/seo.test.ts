@@ -2,6 +2,23 @@ import { describe, it, expect } from "vitest";
 import { getPageContent, publicPaths, escapeHtml } from "../shared/pageContent";
 import { automations } from "../shared/catalog";
 describe("public page content", () => {
+  it("exposes the cleaning rehearsal and contact without JavaScript or checkout", () => {
+    const path = "/demo/quote-handoff";
+    expect(publicPaths).toContain(path);
+    expect(getPageContent("/demo").body).toContain(`href="${path}"`);
+    const page = getPageContent(path);
+    expect(page.missing).toBeUndefined();
+    expect(page.noindex).toBeUndefined();
+    for (const text of [
+      "New estimate",
+      "Existing service issue",
+      "$300/month",
+      "mailto:aria.agentworks@gmail.com?subject=",
+    ]) {
+      expect(page.body).toContain(text);
+    }
+    expect(page.body).not.toMatch(/<form|checkout/i);
+  });
   it("renders every catalog detail with package requirements and draft prices", () => {
     for (const item of automations) {
       const page = getPageContent(`/automations/${item.id}`);

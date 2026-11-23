@@ -1,4 +1,5 @@
 import { getIntegrationPlan } from "./integrationPlans";
+import quoteHandoff from "./quoteHandoff.json";
 import {
   getWorkflowContract,
   contractLabels,
@@ -37,6 +38,23 @@ const products = (ids: string[]) =>
     })
     .join("")}</section>`;
 export function getPageContent(path: string): PublicContent {
+  if (path === "/demo/quote-handoff") {
+    const { title, intro, cases, request, offer, contact, subject } =
+      quoteHandoff;
+    return {
+      title: "Commercial Cleaning Quote Handoff | Aria Agent Agency",
+      heading: title,
+      description: intro,
+      body: [
+        `<p>${escapeHtml(intro)}</p>`,
+        ...cases.map(
+          c =>
+            `<h2>${escapeHtml(c.label)}</h2><blockquote>${escapeHtml(c.message)}</blockquote><p><strong>Owner:</strong> ${escapeHtml(c.owner)}</p><p><strong>Next step:</strong> ${escapeHtml(c.action)}</p><p><strong>Pass if:</strong> ${escapeHtml(c.check)}</p>`
+        ),
+        `<h2>Try this with your intake process</h2><p>${escapeHtml(request)}</p><p>${link(`mailto:${contact}?subject=${encodeURIComponent(subject)}`, contact)}</p><p>${escapeHtml(offer)}</p>`,
+      ].join(""),
+    };
+  }
   if (path === "/")
     return {
       title: "Aria Agent Agency | AI Automations for Your Business",
@@ -192,7 +210,7 @@ export function getPageContent(path: string): PublicContent {
       description:
         "See administrative AI classification and explicit approval gates using fictional data. Explore appointment, no-show, follow-up and diagnostic escalation demos.",
       heading: "A small demo. A clearer picture.",
-      body: "<p>Predefined synthetic cases show AI classification paired with explicit rules and human handoffs. No real patient records, external messages, bookings, or live CRM actions.</p><h2>Choose a workflow</h2><p>Enquiry to appointment, no-show recovery, approved discharge follow-up, pending diagnostic staff escalation, inbound lead qualification, and clinical safety boundary. Missing availability and duplicate-event checks stop unsafe actions.</p>",
+      body: `<p>Predefined synthetic cases show AI classification paired with explicit rules and human handoffs. No real patient records, external messages, bookings, or live CRM actions.</p><p>${link("/demo/quote-handoff", "Try the two-message cleaning quote handoff")}</p><h2>Choose a workflow</h2><p>Enquiry to appointment, no-show recovery, approved discharge follow-up, pending diagnostic staff escalation, inbound lead qualification, and clinical safety boundary. Missing availability and duplicate-event checks stop unsafe actions.</p>`,
     },
     "/how-it-works": {
       title: "How AI Automation Implementation Works | Aria",
@@ -306,6 +324,7 @@ export const publicPaths = [
   ...industries.filter(i => i.id !== "all").map(i => "/industries/" + i.id),
   "/implementation",
   "/demo",
+  "/demo/quote-handoff",
   "/voice-setup",
   "/how-it-works",
   "/faq",
