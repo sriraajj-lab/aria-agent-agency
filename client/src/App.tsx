@@ -9,6 +9,7 @@ import Catalog, { Industries } from "./pages/Catalog";
 import AutomationDetail from "./pages/AutomationDetail";
 import Implementation from "./pages/Implementation";
 import Demo from "./pages/Demo";
+import QuoteHandoff from "./pages/QuoteHandoff";
 import VoiceSetup from "./pages/VoiceSetup";
 import QuickSetup from "./pages/QuickSetup";
 import Auth from "./pages/Auth";
@@ -50,6 +51,7 @@ function Router() {
       <Route path="/industries" component={Industries} />
       <Route path="/industries/:id">{() => <Catalog />}</Route>
       <Route path="/implementation" component={Implementation} />
+      <Route path="/demo/quote-handoff" component={QuoteHandoff} />
       <Route path="/demo" component={Demo} />
       <Route path="/voice-setup" component={VoiceSetup} />
       <Route path="/login" component={Auth} />
